@@ -1,34 +1,10 @@
-from typing import Literal, Optional, TypedDict, TypeGuard, get_args
-from urllib.parse import ParseResult, urlparse
+import http
+from typing import Optional
+from urllib.parse import urlparse
 
+from proj_types.method import is_valid_method
+from proj_types.request_line import RequestLine
 from proj_types.response import Response, ResponseBuilder
-
-Method = Literal[
-    "OPTIONS",
-    "GET",
-    "HEAD",
-    "POST",
-    "PUT",
-    "DELETE",
-    "TRACE",
-]
-
-RequestLine = TypedDict(
-    "RequestLine",
-    {
-        "method": Method,
-        "uri": ParseResult,
-        "version": str,
-    },
-)
-
-
-def is_valid_method(method: str) -> TypeGuard[Method]:
-    allowed_methods = get_args(Method)
-
-    if method in allowed_methods:
-        return True
-    return False
 
 
 def parse_request_line(
@@ -79,10 +55,21 @@ def parse_request_line(
             .build(),
         )
 
+    if uri.path == "*" and method != "OPTIONS":
+        return (
+            None,
+            ResponseBuilder()
+            .status(400)
+            .message("Bad Request: * can only be used with OPTIONS")
+            .build(),
+        )
+
+    if http_version != "HTTP/1.1":
+        return (
+            None,
+            ResponseBuilder().status(505).message("HTTP Version Not Supported").build(),
+        )
+
     request_line: RequestLine = {"method": method, "uri": uri, "version": http_version}
 
     return request_line, None
-
-
-def parse_header(header: str) -> tuple[Optional[dict[str, str]], Optional[Response]]:
-    return None, None

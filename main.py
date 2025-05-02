@@ -28,6 +28,22 @@ def main():
             print(err_res)
             return
 
+        # Parse Headers
+        # Host: <val> is not supported because only requests to this IP are valid
+
+        while True:
+            msg, err_res = recv_line(conn)
+
+            if err_res:
+                print(err_res)
+                return
+
+            if msg == "":
+                break
+
+            header, value = msg.split(":")
+            value = value.lstrip()
+
 
 if __name__ == "__main__":
     main()

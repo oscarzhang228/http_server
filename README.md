@@ -1,6 +1,6 @@
-# HTTP Server + Client Built in Python
+# HTTP Server Built in Python
 
-Built to learn how HTTP works and built on top of the BSD socket library’s TCP sockets.
+Built to understand the HTTP protocol better. Echos back the send request broken down into parts.
 
 ## Features
 
@@ -8,7 +8,8 @@ Built to learn how HTTP works and built on top of the BSD socket library’s TCP
 
 **Supported Versions**
 
-- [ ] HTTP/1.1
+- [x] HTTP/1.1
+  - Following [RFC 2616, Section 5](https://datatracker.ietf.org/doc/html/rfc2616#section-5)
 - [ ] HTTP/2
 - [ ] HTTP/3
 
@@ -24,18 +25,10 @@ Built to learn how HTTP works and built on top of the BSD socket library’s TCP
 
 #### Request Parsing
 
-- Following [RFC 2616, Section 5](https://datatracker.ietf.org/doc/html/rfc2616#section-5)
+**Parts**
 
-  **Parts**
-
-  - [x] Request-Line
-  - [ ] General-Headers
-  - [ ] Request-Headers
-  - [ ] Entity-Headers
-  - [ ] Query Params
-
-### Future
-
-- connection management (one main listener thread and worker threads)
-  - then the Connection header can be respected
-- web requester
+- [x] Request-Line
+- [ ] General-Headers
+- [ ] Request-Headers
+- [ ] Entity-Headers
+- [ ] Query Params
