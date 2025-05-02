@@ -1,28 +1,36 @@
 import socket
 from typing import Optional
 
+from utils.response_utils import Response, ResponseBuilder
 
-def recv_line(conn: socket.socket) -> tuple[str, Optional[Exception]]:
+
+def recv_line(conn: socket.socket) -> tuple[str, Optional[Response]]:
     """
 
     Args:
         sock: TCP socket
 
-    Returns: one line of the message, error if it exists
+    Returns: one line of the message, error as a response if any errors occurred
 
     """
     try:
         msg = []
         while True:
-            nxt_byte = conn.recv(1).decode()
+            nxt_byte = conn.recv(1)
 
-            if nxt_byte == "\r":
-                # grab the \n as well
-                conn.recv(1)
+            # handle CRLF
+            if nxt_byte == b"\x0d":
+                _ = conn.recv(1)
                 break
 
             msg.append(nxt_byte)
 
-        return "".join(msg), None
+        return b"".join(msg).decode(), None
     except Exception as e:
-        return "", e
+        return (
+            "",
+            ResponseBuilder()
+            .status(500)
+            .message(f"Internal Server Error: {e}")
+            .build(),
+        )

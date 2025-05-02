@@ -1,6 +1,6 @@
 import socket
 
-from utils.response_utils import Response
+from utils.request_utils import parse_request_line
 from utils.socket_utils import recv_line
 
 HOST = "localhost"
@@ -16,14 +16,15 @@ def main():
 
         conn, _ = sock.accept()
 
-        msg, err = recv_line(conn)
+        msg, err_res = recv_line(conn)
 
-        if err:
-            print(Response().status(500).message("Failed at recv_line"))
+        if err_res:
+            print(err_res)
             return
 
-        print(msg)
-        print()
+        _, res = parse_request_line(msg)
+
+        print(res)
 
     pass
 

@@ -6,26 +6,20 @@ Built to learn how HTTP works and built on top of the BSD socket library’s TCP
 
 ### Web Server
 
-- **Request Parsing & Response Generation**
-  - Full request-line & header parsing
-    - Supported Headers:
-      - TBD
-  - Query-string parsing (`/search?q=python&lang=en`)
-  - Response to methods:
-    - HEAD: Send headers
-    - GET: Send file if it exists
-    - POST: Create a new file and write the contents of the request body to it
-    - PUT: Overwrite existing file
-    - PATCH: Given a range of lines
-- **Connection Management**
-  - Persistent connections (`keep-alive` / `close`)
-  - Socket/read timeouts to prevent hangs
-  - Thread-pool worker model for connections
+#### Request Parsing
 
-### Web Client
+- Following [RFC 2616, Section 5](https://datatracker.ietf.org/doc/html/rfc2616#section-5)
 
-- **Basic Request Sender**
-  - Build & send GET, HEAD, POST, PUT, DELETE requests
-  - Custom headers & payloads
-- **Response Reader**
-  - Parse status line, headers, and body
+  **Parts**
+
+  - [ ] Request-Line
+  - [ ] General-Headers
+  - [ ] Request-Headers
+  - [ ] Entity-Headers
+  - [ ] Query Params
+
+### Future
+
+- connection management (one main listener thread and worker threads)
+  - then the Connection header can be respected
+- web requester
