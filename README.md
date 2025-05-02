@@ -28,7 +28,7 @@ Built to learn how HTTP works and built on top of the BSD socket library’s TCP
 
   **Parts**
 
-  - [ ] Request-Line
+  - [x] Request-Line
   - [ ] General-Headers
   - [ ] Request-Headers
   - [ ] Entity-Headers

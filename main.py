@@ -1,7 +1,7 @@
 import socket
 
-from utils.request_utils import parse_request_line
-from utils.socket_utils import recv_line
+from utils.parsers import parse_request_line
+from utils.socket import recv_line
 
 HOST = "localhost"
 PORT = 3000
@@ -22,11 +22,11 @@ def main():
             print(err_res)
             return
 
-        _, res = parse_request_line(msg)
+        request_line, err_res = parse_request_line(msg)
 
-        print(res)
-
-    pass
+        if err_res:
+            print(err_res)
+            return
 
 
 if __name__ == "__main__":
