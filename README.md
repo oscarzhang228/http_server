@@ -32,3 +32,17 @@ Built to understand the HTTP protocol better.
 - [ ] Request-Headers
 - [ ] Entity-Headers
 - [ ] Query Params
+
+## Installation
+
+- **Run Tests**
+
+```bash
+make test
+```
+
+- **Run Server**
+
+```bash
+uv run main.py
+```

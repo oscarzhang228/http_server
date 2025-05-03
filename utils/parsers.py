@@ -1,4 +1,3 @@
-import http
 from typing import Optional
 from urllib.parse import urlparse
 
@@ -45,15 +44,6 @@ def parse_request_line(
     # Request-URI can be * | absoluteURI | abs_path | authority
     # server will not support CONNECT / Authority
     uri = urlparse(uri)
-
-    if uri.path == "*" and method != "OPTIONS":
-        return (
-            None,
-            ResponseBuilder()
-            .status(400)
-            .message("Bad Request: * can only be used with OPTIONS")
-            .build(),
-        )
 
     if uri.path == "*" and method != "OPTIONS":
         return (
