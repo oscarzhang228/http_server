@@ -1,5 +1,8 @@
 import socket
 
+from http_server_types.header import (EntityHeader, GeneralHeader,
+                                      RequestHeader, is_entity_header,
+                                      is_general_header, is_request_header)
 from utils.parsers import parse_request_line
 from utils.socket import recv_line
 
@@ -16,6 +19,7 @@ def main():
 
         conn, _ = sock.accept()
 
+        # Request Line
         msg, err_res = recv_line(conn)
 
         if err_res:
@@ -28,8 +32,10 @@ def main():
             print(err_res)
             return
 
-        # Parse Headers
-        # Host: <val> is not supported because only requests to this IP are valid
+        # Headers
+        request_headers = list[tuple[RequestHeader, str]]()
+        general_headers = list[tuple[GeneralHeader, str]]()
+        entity_headers = list[tuple[EntityHeader, str]]()
 
         while True:
             msg, err_res = recv_line(conn)
@@ -42,7 +48,16 @@ def main():
                 break
 
             header, value = msg.split(":")
-            value = value.lstrip()
+            value = value.strip()
+
+            if is_request_header(header):
+                request_headers.append((header, value))
+            elif is_general_header(header):
+                general_headers.append((header, value))
+            elif is_entity_header(header):
+                entity_headers.append((header, value))
+            else:
+                print(f"Invalid header {header} and value {value}")
 
 
 if __name__ == "__main__":
