@@ -1,6 +1,6 @@
 # HTTP Server Built in Python
 
-Built to understand the HTTP protocol better. Echos back the send request broken down into parts.
+Built to understand the HTTP protocol better.
 
 ## Features
 

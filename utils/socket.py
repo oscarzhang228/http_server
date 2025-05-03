@@ -1,7 +1,7 @@
 import socket
 from typing import Optional
 
-from proj_types.response import Response, ResponseBuilder
+from http_server_types.response import Response, ResponseBuilder
 
 
 def recv_line(conn: socket.socket) -> tuple[str, Optional[Response]]:

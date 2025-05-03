@@ -2,9 +2,9 @@ import http
 from typing import Optional
 from urllib.parse import urlparse
 
-from proj_types.method import is_valid_method
-from proj_types.request_line import RequestLine
-from proj_types.response import Response, ResponseBuilder
+from http_server_types.method import is_valid_method
+from http_server_types.request_line import RequestLine
+from http_server_types.response import Response, ResponseBuilder
 
 
 def parse_request_line(
