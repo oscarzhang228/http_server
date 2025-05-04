@@ -14,50 +14,61 @@ def main():
     print("Starting server")
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         sock.bind((HOST, PORT))
         sock.listen(0)
 
-        conn, _ = sock.accept()
-
-        # Request Line
-        msg, err_res = recv_line(conn)
-
-        if err_res:
-            print(err_res)
-            return
-
-        request_line, err_res = parse_request_line(msg)
-
-        if err_res:
-            print(err_res)
-            return
-
-        # Headers
-        request_headers = list[tuple[RequestHeader, str]]()
-        general_headers = list[tuple[GeneralHeader, str]]()
-        entity_headers = list[tuple[EntityHeader, str]]()
-
         while True:
-            msg, err_res = recv_line(conn)
+            conn, _ = sock.accept()
+            print("Connected")
 
-            if err_res:
-                print(err_res)
-                return
+            # Request Line
+            with conn:
+                msg, err_res = recv_line(conn)
 
-            if msg == "":
-                break
+                if err_res:
+                    print(err_res)
+                    return
 
-            header, value = msg.split(":")
-            value = value.strip()
+                request_line, err_res = parse_request_line(msg)
 
-            if is_request_header(header):
-                request_headers.append((header, value))
-            elif is_general_header(header):
-                general_headers.append((header, value))
-            elif is_entity_header(header):
-                entity_headers.append((header, value))
-            else:
-                print(f"Invalid header {header} and value {value}")
+                if err_res:
+                    print(err_res)
+                    return
+
+                # Headers
+                request_headers = dict[str, str]()
+                general_headers = dict[str, str]()
+                entity_headers = dict[str, str]()
+
+                while True:
+                    msg, err_res = recv_line(conn)
+
+                    if err_res:
+                        print(err_res)
+                        return
+
+                    if msg == "":
+                        break
+
+                    partition_idx = msg.find(":")
+                    header = msg[0:partition_idx]
+                    # add 1 to skip one whitespace
+                    value = msg[partition_idx + 1 : len(msg)]
+
+                    if is_request_header(header):
+                        request_headers[header] = value
+                    elif is_general_header(header):
+                        general_headers[header] = value
+                    elif is_entity_header(header):
+                        entity_headers[header] = value
+                    else:
+                        print(f"Invalid header {header} and value {value}")
+
+                # Request Body
+                if "Content-Length" in entity_headers:
+                    body = conn.recv(int(entity_headers["Content-Length"]))
+                    print(body)
 
 
 if __name__ == "__main__":

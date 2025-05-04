@@ -18,9 +18,10 @@ def recv_line(conn: socket.socket) -> tuple[str, Optional[Response]]:
         while True:
             nxt_byte = conn.recv(1)
 
-            # handle CRLF
-            if nxt_byte == b"\x0d":
+            if nxt_byte == b"\r":
                 _ = conn.recv(1)
+                break
+            elif nxt_byte == b"\n":
                 break
 
             msg.append(nxt_byte)
