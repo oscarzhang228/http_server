@@ -1,8 +1,7 @@
 import socket
 
-from http_server_types.header import (EntityHeader, GeneralHeader,
-                                      RequestHeader, is_entity_header,
-                                      is_general_header, is_request_header)
+from http_server_types.header import (is_entity_header, is_general_header,
+                                      is_request_header)
 from utils.parsers import parse_request_line
 from utils.socket import recv_line
 
