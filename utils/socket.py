@@ -30,8 +30,5 @@ def recv_line(conn: socket.socket) -> tuple[str, Optional[Response]]:
     except Exception as e:
         return (
             "",
-            ResponseBuilder()
-            .status(500)
-            .message(f"Internal Server Error: {e}")
-            .build(),
+            ResponseBuilder().status(500).message(str(e)).build(),
         )

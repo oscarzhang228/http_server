@@ -24,9 +24,7 @@ def parse_request_line(
         return None, (
             ResponseBuilder()
             .status(400)
-            .message(
-                "Bad Request: Request line must consist of 'METHOD Request-URI HTTP-Version'"
-            )
+            .message("Request line must consist of 'METHOD Request-URI HTTP-Version'")
             .build()
         )
 
@@ -35,10 +33,7 @@ def parse_request_line(
     if not is_valid_method(method):
         return (
             None,
-            ResponseBuilder()
-            .status(405)
-            .message(f"Method Not Allowed: {method}")
-            .build(),
+            ResponseBuilder().status(405).message(method).build(),
         )
 
     # Request-URI can be * | absoluteURI | abs_path | authority
@@ -50,14 +45,14 @@ def parse_request_line(
             None,
             ResponseBuilder()
             .status(400)
-            .message("Bad Request: * can only be used with OPTIONS")
+            .message("* can only be used with OPTIONS")
             .build(),
         )
 
     if http_version != "HTTP/1.1":
         return (
             None,
-            ResponseBuilder().status(505).message("HTTP Version Not Supported").build(),
+            ResponseBuilder().status(505).message("Only HTTP/1.1 is supported").build(),
         )
 
     request_line: RequestLine = {"method": method, "uri": uri, "version": http_version}
