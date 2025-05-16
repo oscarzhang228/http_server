@@ -1,12 +1,19 @@
 import socket
+from types import FunctionType
 
 from http_server_types.header import (is_entity_header, is_general_header,
                                       is_request_header)
+from http_server_types.method import Method
+from http_server_types.response import ResponseBuilder
+from utils.http_handlers import get_data
 from utils.parsers import parse_request_line
+from utils.send_response import send_response
 from utils.socket import recv_line
 
 HOST = "localhost"
 PORT = 3000
+
+method_handlers: dict[Method, FunctionType] = {"GET": get_data}
 
 
 def main():
@@ -67,7 +74,8 @@ def main():
                 # Request Body
                 if "Content-Length" in entity_headers:
                     body = conn.recv(int(entity_headers["Content-Length"]))
-                    print(body)
+
+                print(method_handlers[request_line["method"]](request_line["uri"]))
 
 
 if __name__ == "__main__":
