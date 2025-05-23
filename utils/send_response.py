@@ -1,3 +1,4 @@
+import json
 import socket
 from typing import Optional
 
@@ -9,8 +10,11 @@ def send_response(
 ) -> Optional[str]:
     status_line = (
         f"{http_version} {res["statusCode"]} {reason_phrases[res["statusCode"]]}\r\n"
-    )
+    ).encode()
 
-    conn.sendall(status_line.encode())
+    body = json.dumps(res).encode()
+
+    formatted_res = status_line + b"\r\n" + body
+    conn.sendall(formatted_res)
 
     return None

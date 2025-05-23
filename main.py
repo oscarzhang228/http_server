@@ -1,10 +1,10 @@
 import socket
-from types import FunctionType
 
-from http_server_types.header import (is_entity_header, is_general_header,
-                                      is_request_header)
-from http_server_types.method import Method
-from http_server_types.response import ResponseBuilder
+from http_server_types.header import (
+    is_entity_header,
+    is_general_header,
+    is_request_header,
+)
 from utils.http_handlers import get_data
 from utils.parsers import parse_request_line
 from utils.send_response import send_response
@@ -12,8 +12,6 @@ from utils.socket import recv_line
 
 HOST = "localhost"
 PORT = 3000
-
-method_handlers: dict[Method, FunctionType] = {"GET": get_data}
 
 
 def main():
@@ -28,7 +26,6 @@ def main():
             conn, _ = sock.accept()
             print("Connected")
 
-            # Request Line
             with conn:
                 msg, err_res = recv_line(conn)
 
@@ -36,6 +33,7 @@ def main():
                     print(err_res)
                     return
 
+                # Request Line
                 request_line, err_res = parse_request_line(msg)
 
                 if err_res:
@@ -74,8 +72,19 @@ def main():
                 # Request Body
                 if "Content-Length" in entity_headers:
                     body = conn.recv(int(entity_headers["Content-Length"]))
+                else:
+                    body = ""
 
-                print(method_handlers[request_line["method"]](request_line["uri"]))
+                match request_line["method"]:
+                    case "GET":
+                        res, err = get_data(request_line["uri"])
+
+                        if err:
+                            send_response(conn, err)
+                        elif res:
+                            send_response(conn, res)
+                        else:
+                            print("Error occured in get_data function")
 
 
 if __name__ == "__main__":

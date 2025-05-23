@@ -1,13 +1,23 @@
 import os
-from email import message
 from typing import Optional
 from urllib.parse import ParseResult
 
+from definitions import PROJ_ROOT
 from http_server_types.response import Response, ResponseBuilder
 
 
-def get_data(uri: ParseResult) -> tuple[Optional[str], Optional[Response]]:
-    if not os.path.exists(f"/data{uri.path}/data.txt"):
+def get_data_path(uri: ParseResult) -> str:
+    if uri.path == "/":
+        file_path = f"{PROJ_ROOT}/data{uri.path}data.txt"
+    else:
+        file_path = f"{PROJ_ROOT}/data{uri.path}/data.txt"
+    return file_path
+
+
+def get_data(uri: ParseResult) -> tuple[Optional[Response], Optional[Response]]:
+    file_path = get_data_path(uri)
+
+    if not os.path.exists(file_path):
         return (
             None,
             ResponseBuilder()
@@ -16,4 +26,10 @@ def get_data(uri: ParseResult) -> tuple[Optional[str], Optional[Response]]:
             .build(),
         )
 
-    return None, None
+    with open(file_path, "r") as f:
+        content = f.read()
+        return ResponseBuilder().status(200).data(content).build(), None
+
+
+def post_data(uri: ParseResult):
+    file_path = get_data_path(uri)

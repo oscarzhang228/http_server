@@ -1,6 +1,9 @@
-from typing import Self, TypedDict, override
+from typing import NotRequired, Self, TypedDict, override
 
-Response = TypedDict("Response", {"statusCode": int, "message": str})
+Response = TypedDict(
+    "Response",
+    {"statusCode": int, "message": NotRequired[str], "data": NotRequired[str]},
+)
 
 reason_phrases: dict[int, str] = {
     100: "Continue",
@@ -48,7 +51,7 @@ reason_phrases: dict[int, str] = {
 
 class ResponseBuilder:
     def __init__(self):
-        self.res = Response({"statusCode": 500, "message": ""})
+        self.res = Response({"statusCode": 500})
 
     def status(self: Self, statusCode: int) -> Self:
         self.res["statusCode"] = statusCode
@@ -56,6 +59,10 @@ class ResponseBuilder:
 
     def message(self: Self, msg: str) -> Self:
         self.res["message"] = msg
+        return self
+
+    def data(self: Self, data: str) -> Self:
+        self.res["data"] = data
         return self
 
     def build(self: Self) -> Response:
