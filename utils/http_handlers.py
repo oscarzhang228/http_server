@@ -28,8 +28,14 @@ def get_data(uri: ParseResult) -> tuple[Optional[Response], Optional[Response]]:
 
     with open(file_path, "r") as f:
         content = f.read()
-        return ResponseBuilder().status(200).data(content).build(), None
+
+    return ResponseBuilder().status(200).data(content).build(), None
 
 
-def post_data(uri: ParseResult):
+def post_data(uri: ParseResult, data: str) -> Optional[Response]:
     file_path = get_data_path(uri)
+
+    with open(file_path, "w") as f:
+        f.write(data)
+
+    return ResponseBuilder().status(200).message(f"Data posted at {file_path}").build()

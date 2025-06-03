@@ -1,11 +1,10 @@
+import json
 import socket
 
-from http_server_types.header import (
-    is_entity_header,
-    is_general_header,
-    is_request_header,
-)
-from utils.http_handlers import get_data
+from http_server_types.header import (is_entity_header, is_general_header,
+                                      is_request_header)
+from http_server_types.response import ResponseBuilder
+from utils.http_handlers import get_data, post_data
 from utils.parsers import parse_request_line
 from utils.send_response import send_response
 from utils.socket import recv_line
@@ -71,9 +70,21 @@ def main():
 
                 # Request Body
                 if "Content-Length" in entity_headers:
-                    body = conn.recv(int(entity_headers["Content-Length"]))
+                    data = conn.recv(int(entity_headers["Content-Length"])).decode()
+
+                    try:
+                        body = json.loads(data)
+                    except:
+                        send_response(
+                            conn,
+                            ResponseBuilder()
+                            .status(500)
+                            .message("Was not able to parse request body.")
+                            .build(),
+                        )
+                        return
                 else:
-                    body = ""
+                    body: dict = json.loads("{}")
 
                 match request_line["method"]:
                     case "GET":
@@ -85,6 +96,23 @@ def main():
                             send_response(conn, res)
                         else:
                             print("Error occured in get_data function")
+                    case "POST":
+                        if body or body["content"] == "":
+                            send_response(
+                                conn,
+                                ResponseBuilder()
+                                .status(400)
+                                .message("POST requests must contain a message")
+                                .build(),
+                            )
+                            return
+
+                        res = post_data(request_line["uri"], body["content"])
+
+                        if res:
+                            send_response(conn, res)
+                        else:
+                            send_response(conn, ResponseBuilder().status(500).build())
 
 
 if __name__ == "__main__":
